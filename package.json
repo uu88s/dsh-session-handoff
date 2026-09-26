@@ -1,0 +1,54 @@
+{
+  "name": "@uu88s/dsh-session-handoff",
+  "version": "0.1.0",
+  "description": "复制 DSH 会话 id，或把整个会话交接给 codex：在目标 agent 的会话库里写下它能 resume 的记录并登记进它的索引。",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uu88s/dsh-session-handoff.git"
+  },
+  "engines": {
+    "dsh": ">=0.1.5-rc.1",
+    "node": ">=22"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json"
+  },
+  "meta": {
+    "title": "会话交接 Session Handoff",
+    "description": "复制 DSH 会话 id，或把整个会话交接给 codex：在 codex 会话库里写好可 resume 的会话记录并登记进它的索引。"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib",
+    "locale",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "session",
+    "handoff",
+    "codex",
+    "resume"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  }
+}

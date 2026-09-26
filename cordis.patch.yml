@@ -1,0 +1,4 @@
+- insert:
+    - id: session-handoff
+      name: '@uu88s/dsh-session-handoff'
+      config: {}

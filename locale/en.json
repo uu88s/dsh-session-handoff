@@ -1,0 +1,4 @@
+{
+  "title": "Session Handoff",
+  "description": "Copy a DSH session id, or hand the whole session over to codex: write a resumable record into the codex session store and register it in its index."
+}

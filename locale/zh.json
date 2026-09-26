@@ -1,0 +1,4 @@
+{
+  "title": "会话交接 Session Handoff",
+  "description": "复制 DSH 会话 id，或把整个会话交接给 codex：在 codex 会话库里写好可 resume 的会话记录并登记进它的索引。"
+}
