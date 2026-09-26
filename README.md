@@ -14,6 +14,16 @@ dsh plugin install @uu88s/dsh-session-handoff   # 从 npm 安装
 dsh plugin install /绝对路径/到/本包             # 或从本地目录安装（plugin_manager 的 install_bundle，target 传绝对目录）
 ```
 
+npm 不可达时，改用 GitHub Release 里的 `uu88s-dsh-session-handoff-0.1.0.tgz`：
+
+```bash
+curl -L -o handoff.tgz https://github.com/uu88s/dsh-session-handoff/releases/download/v0.1.0/uu88s-dsh-session-handoff-0.1.0.tgz
+tar -xzf handoff.tgz
+dsh plugin install /绝对路径/到/package
+```
+
+源码：<https://github.com/uu88s/dsh-session-handoff>；问题反馈：<https://github.com/uu88s/dsh-session-handoff/issues>。
+
 安装后 client 半边改动可免刷新生效（依赖 `dsh-client-hmr` 的轮询）；**host 半边改 JS 需要重启 DSH**。
 
 ## 用法
