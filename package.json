@@ -8,6 +8,11 @@
     "type": "git",
     "url": "git+https://github.com/uu88s/dsh-session-handoff.git"
   },
+  "homepage": "https://github.com/uu88s/dsh-session-handoff#readme",
+  "bugs": {
+    "url": "https://github.com/uu88s/dsh-session-handoff/issues"
+  },
+  "author": "uu88s",
   "engines": {
     "dsh": ">=0.1.5-rc.1",
     "node": ">=22"
