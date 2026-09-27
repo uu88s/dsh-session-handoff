@@ -9,24 +9,23 @@ DSH Web 插件。做两件事：
 
 ## 安装
 
-**从 GitHub 安装（推荐）**——插件管理就是在 profile 目录里转发给 pnpm，所以直接用 pnpm 的 git 依赖写法：
+下面的写法都实测过，任选其一：
 
 ```bash
-dsh plugin --profile web add github:uu88s/dsh-session-handoff        # 跟随 main
-dsh plugin --profile web add github:uu88s/dsh-session-handoff#v0.1.0 # 锁定版本标签
-```
+# 跟随 main
+dsh plugin --profile web add github:uu88s/dsh-session-handoff
 
-**或直接用 tarball（不需要 git）：**
+# 锁定版本标签
+dsh plugin --profile web add github:uu88s/dsh-session-handoff#v0.1.0
 
-```bash
-# 源码归档，走 codeload.github.com —— 含 test/ 与 docs/，可本地跑验收
+# 源码归档 —— 含 test/ 与 docs/，可本地跑验收
 dsh plugin --profile web add https://codeload.github.com/uu88s/dsh-session-handoff/tar.gz/refs/tags/v0.1.0
 
-# Release 资产，走 github.com —— 只含发布白名单里的 15 个文件
+# Release 资产 —— 只含发布白名单里的 15 个文件
 dsh plugin --profile web add https://github.com/uu88s/dsh-session-handoff/releases/download/v0.1.0/uu88s-dsh-session-handoff-0.1.0.tgz
 ```
 
-**或先下载再本地安装**（`plugin_manager` 的 `install_bundle`，target 传绝对目录）：
+或者先下载再本地安装（`plugin_manager` 的 `install_bundle`，target 传绝对目录）：
 
 ```bash
 curl -L -o handoff.tar.gz https://codeload.github.com/uu88s/dsh-session-handoff/tar.gz/refs/tags/v0.1.0
@@ -34,22 +33,11 @@ tar -xzf handoff.tar.gz
 dsh plugin --profile web add /绝对路径/到/dsh-session-handoff-0.1.0
 ```
 
-四条路都实测过，装完 `dsh --profile web --dump-config` 的组合树里都能看到 `- id: session-handoff` / `name: '@uu88s/dsh-session-handoff'`。**差别只在走哪台主机**：
-
-| 写法 | 先连哪台主机 | 本机 `github.com` 不通时 |
-| --- | --- | --- |
-| `github:uu88s/...` | `github.com:443`（`git ls-remote` + clone） | ❌ `ERR_PNPM_GIT_RESOLVE_FAILED` |
-| `.../releases/download/...tgz` | `github.com`（再 302 到 objects） | ❌ `ERR_PNPM_PACKAGE_MANAGER_ADD_RESOLVE_TARBALL`，`tcp connect error (os error 10060)` |
-| `codeload.github.com/.../tar.gz/...` | `codeload.github.com` | ✅ 可用 |
-| 先 curl 再本地装 | 同上，取决于你从哪下 | ✅ 可用 |
-
-本机 `github.com:443` 会成片地完全不通（`curl` 10 秒超时、`git ls-remote` 报 `Failed to connect to github.com port 443`），而 `codeload.github.com` / `api.github.com` 同一时刻是 200——**装不上时先换 codeload 那条**。
-
-> **npm 通道尚未发布。** `@uu88s/dsh-session-handoff` 目前在 npm 上还是没人占用的空名字：npm 官网的注册/登录页对当前网络出口的机房 IP 直接返回 403 challenge，账号建不出来（详见「为什么没有 npm 包」）。等能登录后再补。
+装完在 `dsh --profile web --dump-config` 的组合树里能看到 `- id: session-handoff` / `name: '@uu88s/dsh-session-handoff'`。
 
 ### 包内容
 
-`package.json` 的 `files` 白名单（npm 与 GitHub 安装同样生效，共 15 个文件）：
+`package.json` 的 `files` 白名单（共 15 个文件）：
 
 ```
 index.js  client.js  package.json  cordis.patch.yml  README.md  LICENSE
@@ -109,7 +97,7 @@ locale/{zh,en}.json
 | 17:16 | `2e61001f-…` | 783 行 / 1.3 MB | 8 轮 / 32 条 |
 | 18:05（源会话已变长） | `40c65068-…` | 1053 行 / 1.75 MB | 11 轮 / 39 条 |
 
-第一次交接**之后**才在源会话里出现的文字（例如「左边的文字」「npm/GitHub」）在 `2e61001f` 的转录里查不到，在重新交接出来的 `40c65068` 里**查得到**——两条通道（模型上下文 / 界面转录）都带上了新内容。
+第一次交接**之后**才在源会话里出现的文字在 `2e61001f` 的转录里查不到，在重新交接出来的 `40c65068` 里**查得到**——两条通道（模型上下文 / 界面转录）都带上了新内容。
 
 ## 适配器范围
 
@@ -119,7 +107,7 @@ v1 只实现 **codex**（本机唯一可 `resume` 的 CLI agent）。适配器�
 
 ## 测试与验收
 
-`test/` 不进发布包，三个脚本都不需要浏览器，也不需要正在运行的 DSH：
+`test/` 不进发布包，这几个脚本都不需要浏览器，也不需要正在运行的 DSH：
 
 | 脚本 | 做什么 | 写盘？ |
 | --- | --- | --- |
@@ -142,30 +130,6 @@ v1 只实现 **codex**（本机唯一可 `resume` 的 CLI agent）。适配器�
 - 本插件**修复前**交接出来的目标会话（只有模型上下文、界面空白）不会自动变好，需要重新交接一次；旧的可以用 `/handoff --undo` 撤销。
 - 目标侧必须存在可用的 codex 状态库；若目标 agent 正在运行，登记可能遇到 `SQLITE_BUSY`（预检会先探测）。
 - 撤销不会动 DSH 源会话，也不会动 `~/.codex/session_index.jsonl`（它只是名字索引，不是 resume 入口）。
-
-## 为什么没有 npm 包
-
-`npm publish --dry-run` 是绿的（34.6 kB / 15 文件），卡在**注册**这一步：
-
-```
-GET https://www.npmjs.com/signup
-→ HTTP 403   server: cloudflare   cf-mitigated: challenge
-  （403 页面是 DataDome 验证页，跳 geo.captcha-delivery.com）
-```
-
-npmjs.com 的**整个网页**（`/`、`/login`、`/signup`、`/~用户名`）对本机出口 IP 一律 403 challenge，只有 `registry.npmjs.org` API 是 200——所以 registry 能查包、能下载，但账号建不出来。本机走 clash-verge（`127.0.0.1:7897`）出网，出口是 `20.41.96.181`（Azure 机房 IP），这类 IP 段是 bot 检测的重点；直连则 TLS 就断。
-
-同类反馈：[npm/cli#8902](https://github.com/npm/cli/issues/8902)、[community #192766](https://github.com/orgs/community/discussions/192766)、[V2EX t/1183761](https://global.v2ex.co/t/1183761)（结论：关代理/换住宅 IP 就能注册）。
-
-**解法**：换住宅 IP 节点（或关代理直连）后注册登录，再：
-
-```bash
-npm login --registry=https://registry.npmjs.org/ --auth-type=web --scope=@uu88s
-npm pack  --registry=https://registry.npmjs.org/
-npm publish @uu88s-dsh-session-handoff-0.1.0.tgz --registry=https://registry.npmjs.org/ --access public
-```
-
-在那之前，GitHub 安装路径是完整可用的替代方案。
 
 ## 许可
 
