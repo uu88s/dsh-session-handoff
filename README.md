@@ -16,21 +16,25 @@ dsh plugin --profile web add github:uu88s/dsh-session-handoff        # 跟随 ma
 dsh plugin --profile web add github:uu88s/dsh-session-handoff#v0.1.0 # 锁定版本标签
 ```
 
-**或直接用 Release 里的 tarball：**
+**或直接用 tarball（不需要 git，纯 HTTPS）：**
 
 ```bash
+# 源码归档 —— 含 test/ 与 docs/，可以本地跑验收
+dsh plugin --profile web add https://codeload.github.com/uu88s/dsh-session-handoff/tar.gz/refs/tags/v0.1.0
+
+# Release 资产 —— 只含发布白名单里的 15 个文件
 dsh plugin --profile web add https://github.com/uu88s/dsh-session-handoff/releases/download/v0.1.0/uu88s-dsh-session-handoff-0.1.0.tgz
 ```
 
 **或先下载再本地安装**（`plugin_manager` 的 `install_bundle`，target 传绝对目录）：
 
 ```bash
-curl -L -o handoff.tgz https://github.com/uu88s/dsh-session-handoff/releases/download/v0.1.0/uu88s-dsh-session-handoff-0.1.0.tgz
+curl -L -o handoff.tgz https://codeload.github.com/uu88s/dsh-session-handoff/tar.gz/refs/tags/v0.1.0
 tar -xzf handoff.tgz
-dsh plugin --profile web add /绝对路径/到/package
+dsh plugin --profile web add /绝对路径/到/dsh-session-handoff-0.1.0
 ```
 
-三种方式都已实测：装完 `dsh --profile web --dump-config` 的组合树里能看到 `- id: session-handoff` / `name: '@uu88s/dsh-session-handoff'`，装出来的就是下面「包内容」那 15 个文件。
+四种方式都已实测：装完 `dsh --profile web --dump-config` 的组合树里能看到 `- id: session-handoff` / `name: '@uu88s/dsh-session-handoff'`。前两种（`github:` spec）走 `git ls-remote`，网络里 `github.com:443` 不通时会报 `ERR_PNPM_GIT_RESOLVE_FAILED`；后两种走 `codeload.github.com` / `api.github.com`，在 `github.com` 被墙时依然可用——所以**装不上时优先换 tarball 写法**。
 
 > **npm 通道尚未发布。** `@uu88s/dsh-session-handoff` 目前在 npm 上还是没人占用的空名字：npm 官网的注册/登录页对当前网络出口的机房 IP 直接返回 403 challenge，账号建不出来（详见「为什么没有 npm 包」）。等能登录后再补。
 
