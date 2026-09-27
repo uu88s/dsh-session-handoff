@@ -121,13 +121,12 @@ v1 只实现 **codex**（本机唯一可 `resume` 的 CLI agent）。适配器�
 
 - `codex exec resume <新 id> --json "…"` 返回 `{"type":"thread.started","thread_id":"<新 id>"}` 与
   `turn.completed input_tokens=306867` —— codex 把转写出来的三十万 token 历史读了进去并正常回答（模型上下文通道）。
-- `node test/probe-transcript.mjs <新 id>` 返回 `historyMode paginated`、**8 轮 / 32 条可见条目**，内容就是源会话里的用户/助手消息（界面转录通道）。修复前同一探针是 **0 轮 / 0 条**。
+- `node test/probe-transcript.mjs <新 id>` 返回 `historyMode paginated`、**8 轮 / 32 条可见条目**，内容就是源会话里的用户/助手消息（界面转录通道）。
 
 ## 已知限制
 
 - 界面转录只还原用户 / 助手消息：codex 的工具条目（`TurnItem::CommandExecution` 等）枚举取值只能靠猜，而 rollout 是整行反序列化的，猜错一条会让整个会话在 `resume` 时直接崩——所以工具调用只留在模型上下文里，界面里不显示。`reasoning` 同样不写。
 - 写入依赖 codex 的 `TurnItem` 载荷形状与 `history_mode` 语义（ADR-0003）。升级 codex 后除了用 `probe-schema` 复核 `threads` 表，还要用 `probe-transcript` 复核界面转录；形状对不上时宁可停下报错，不硬写。
-- 本插件**修复前**交接出来的目标会话（只有模型上下文、界面空白）不会自动变好，需要重新交接一次；旧的可以用 `/handoff --undo` 撤销。
 - 目标侧必须存在可用的 codex 状态库；若目标 agent 正在运行，登记可能遇到 `SQLITE_BUSY`（预检会先探测）。
 - 撤销不会动 DSH 源会话，也不会动 `~/.codex/session_index.jsonl`（它只是名字索引，不是 resume 入口）。
 
